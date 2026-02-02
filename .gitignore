@@ -1,0 +1,22 @@
+# Virtual environment
+.venv/
+venv/
+
+# PyCharm
+.idea/
+*.iml
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Selenium/Selene
+.selenium/
+.selene/
+.wdm/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
