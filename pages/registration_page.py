@@ -1,12 +1,14 @@
 from selene.support.shared import browser
 from selene import have, command
 from pathlib import Path
+from tests.data.users import User
 
 import tests
 
 
 def resource_path(file_name: str) -> str:
     return str(Path(__file__).parent.parent.joinpath('tests', 'resources', file_name).resolve())
+
 
 class RegistrationPage:
 
@@ -89,18 +91,38 @@ class RegistrationPage:
     def click_submit_button(self):
         browser.element('#submit').perform(command.js.click)
 
-    def should_registered_user_with(self, first_name, last_name, email, gender, phone, day_of_birth, month_of_birth, year_of_birth, subject, hobbies, attaches, address, state_and_city):
+    def register(self, user: User):
+        self.fill_first_name(user.first_name)
+        self.fill_last_name(user.last_name)
+        self.fill_email(user.email)
+        self.select_gender(user.gender.value)
+        self.fill_mobile_phone(user.mobile_phone)
+        self.fill_mobile_phone(user.mobile_phone)
+        self.fill_date_of_birth(user.date_of_birth.strftime('%B'),
+                                str(user.date_of_birth.year),
+                                str(user.date_of_birth.day))
+        self.select_subject(user.subject)
+        for hobby in user.hobbies:
+            self.select_hobbie(hobby.value)
+        self.upload_picture(user.picture)
+        self.fill_current_address(user.address)
+        self.select_state(user.state)
+        self.select_city(user.city)
+        self.click_submit_button()
+        return self
+
+    def should_registered_user_with(self, user: User):
         browser.element('.table').all('td').even.should(
             have.exact_texts(
-                f'{first_name} {last_name}',
-                f'{email}',
-                f'{gender}',
-                f'{phone}',
-                f'{day_of_birth} {month_of_birth},{year_of_birth}',
-                f'{subject}',
-                f'{hobbies}',
-                f'{attaches}',
-                f'{address}',
-                f'{state_and_city}',
+                f'{user.first_name} {user.last_name}',
+                user.email,
+                user.gender.value,
+                user.mobile_phone,
+                f'{user.date_of_birth.day} {user.date_of_birth.strftime("%B")},{user.date_of_birth.year}',
+                user.subject,
+                ', '.join([h.value for h in user.hobbies]),
+                user.picture,
+                user.address,
+                f'{user.state} {user.city}',
             )
         )
